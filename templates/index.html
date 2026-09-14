@@ -69,6 +69,7 @@
                     let fallbackResponse = await fetch('https://catfact.ninja/fact');
                     let fallbackData = await fallbackResponse.json();
                     factText.textContent = fallbackData.fact;
+                    factText.append("Source: CatNinja");
                 } catch (fallbackError) {
                     factText.textContent = "Oops! Couldn't fetch a cat fact right meow. Try again!";
                 }
