@@ -10,7 +10,7 @@ from .serializers import CatFactSerializer
 class CatFactViewSet(viewsets.ModelViewSet):
 	queryset = CatFact.objects.all()
 	serializer_class = CatFactSerializer
-	permission_Classes = [IsAuthenticatedOrReadOnly]
+	permission_classes = [IsAuthenticatedOrReadOnly]
 
 	@action(detail=False, methods=['get'])
 	def random(self, request):

@@ -21,6 +21,6 @@ from facts.views import frontend_view
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('facts.urls')),
-    path('api-auth/' include('rest_framework.urls')),
+    path('api-auth/', include('rest_framework.urls')),
     path('', frontend_view, name='home'),
 ]
