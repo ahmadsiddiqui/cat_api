@@ -3,12 +3,14 @@ from rest_framework import viewsets
 from django.shortcuts import render
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from .models import CatFact
 from .serializers import CatFactSerializer
 
 class CatFactViewSet(viewsets.ModelViewSet):
 	queryset = CatFact.objects.all()
 	serializer_class = CatFactSerializer
+	permission_Classes = [IsAuthenticatedOrReadOnly]
 
 	@action(detail=False, methods=['get'])
 	def random(self, request):
