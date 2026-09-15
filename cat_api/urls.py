@@ -17,10 +17,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from facts.views import frontend_view
+from facts.views import submit_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('facts.urls')),
     path('api-auth/', include('rest_framework.urls')),
     path('', frontend_view, name='home'),
+    path('submit/',submit_view, name='submit'),
 ]
