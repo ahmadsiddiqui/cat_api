@@ -91,12 +91,16 @@ def catfact_random(request):
 
 def catfact_list_http_response(request):
 	context = {}
+	if len(CatFact.objects.all()) == 0:
+		context['nofacts'] = True
+
 	context['facts'] = CatFact.objects.all()
+
 	return render(request, "fact_list.html", context)
 
 def delete_catfact_http_response(request, id):
 	obj = get_object_or_404(CatFact, pk=id)
 	obj.delete()
 	return redirect("fact_list")
-	
+
 

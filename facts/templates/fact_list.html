@@ -44,6 +44,11 @@
     <div class="container d-flex justify-content-center px-3">
         <div class="card fact-card border-0 text-center p-5 bg-white">
             <h1 class="display-5 mb-4 fw-bold text-primary">🐾Fact List</h1>
+            {% if nofacts %}
+            <p id="fact-text" class="fs-4 lead text-secondary mb-0">
+                    Uh-oh, looks like SOMEONE deleted all the facts...
+                </p>
+            {% endif %}
             <table class="table table-hover">
             	{% for fact in facts %}
 					<tr id="{{ fact.id }}"><td>{{ fact }}</td><td  class="deleteBtn" onclick="deleteRow({{fact.id}})"> ❌ <td></tr>
