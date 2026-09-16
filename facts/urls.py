@@ -10,7 +10,9 @@ router = DefaultRouter()
 urlpatterns = [
     path("facts", views.catfact_list),
     path("facts/<int:pk>", views.catfact_detail),
-    path("random", views.catfact_random)
+    path("random", views.catfact_random),
+    path("fact_list",views.catfact_list_http_response, name="fact_list"),
+    path("facts/delete/<int:id>", views.delete_catfact_http_response),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

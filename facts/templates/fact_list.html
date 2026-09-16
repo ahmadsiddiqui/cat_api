@@ -1,0 +1,59 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<script type="text/javascript">
+	function deleteRow(id) {
+		fetchString = "facts/delete/" + id;
+		console.log(fetchString);
+		fetch(fetchString);
+		const tr = document.getElementById(id);
+		tr.remove();
+	}
+	
+</script>
+
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catfacts!</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #e9ecef;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .fact-card {
+            max-width: 600px;
+            width: 100%;
+            border-radius: 1rem;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        }
+        .deleteBtn{
+        	cursor: pointer;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+
+    <div class="container d-flex justify-content-center px-3">
+        <div class="card fact-card border-0 text-center p-5 bg-white">
+            <h1 class="display-5 mb-4 fw-bold text-primary">🐾Fact List</h1>
+            <table class="table table-hover">
+            	{% for fact in facts %}
+					<tr id="{{ fact.id }}"><td>{{ fact }}</td><td  class="deleteBtn" onclick="deleteRow({{fact.id}})"> ❌ <td></tr>
+				{% endfor %}
+
+			</table>
+
+            
+        </div>
+    </div>
+
+
+</body>
+</html>

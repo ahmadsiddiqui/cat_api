@@ -3,7 +3,7 @@ from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import viewsets
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
-from django.shortcuts import render
+from django.shortcuts import render, redirect, get_object_or_404
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny
@@ -89,4 +89,14 @@ def catfact_random(request):
 		return JsonResponse(serializer.data)
 	return JsonReposne(serializer.errors, status=400)
 
+def catfact_list_http_response(request):
+	context = {}
+	context['facts'] = CatFact.objects.all()
+	return render(request, "fact_list.html", context)
+
+def delete_catfact_http_response(request, id):
+	obj = get_object_or_404(CatFact, pk=id)
+	obj.delete()
+	return redirect("fact_list")
+	
 

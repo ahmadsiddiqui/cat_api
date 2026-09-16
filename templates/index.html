@@ -39,7 +39,8 @@
                     Get Another Fact
                 </button>
                 </br>
-                <a class="btn btn-primary btn-lg rounded-pill my-3 px-5 shadow-sm" href="/submit" role="button">Submit a cat fact</a>
+                <a class="btn btn-light btn-md  my-3 mx-2 px-5 shadow-sm" href="/submit" role="button">Submit a cat fact</a>
+                <a class="btn btn-light btn-md  my-3 mx-2 px-5 shadow-sm" href="/fact_list" role="button">See all facts</a>
             </div>
         </div>
 
@@ -69,15 +70,9 @@
                 }
             } catch (error) {
                 // 2. Fallback to external API if local fails or is empty
-                console.log("Local API failed, using fallback...", error);
-                try {
-                    let fallbackResponse = await fetch('https://catfact.ninja/fact');
-                    let fallbackData = await fallbackResponse.json();
-                    factText.textContent = fallbackData.fact;
-                    factText.append("Source: CatNinja");
-                } catch (fallbackError) {
-                    factText.textContent = "Oops! Couldn't fetch a cat fact right meow. Try again!";
-                }
+                console.log("There are no facts", error);
+                factText.textContent = "Uh-oh, looks like there are no facts here...";
+                
             } finally {
                 // Re-enable the button
                 fetchBtn.disabled = false;
