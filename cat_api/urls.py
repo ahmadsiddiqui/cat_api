@@ -25,6 +25,6 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls')),
     path('', frontend_view, name='home'),
     path('submit/',submit_view, name='submit'),
-    path("fact_list",catfact_list_http_response, name="fact_list"),
+    path("fact_list/",catfact_list_http_response, name="fact_list"),
     path("facts/delete/<int:id>", delete_catfact_http_response),
 ]
