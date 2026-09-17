@@ -8,9 +8,9 @@ router = DefaultRouter()
 # router.register(r'facts', CatFactViewSet)
 
 urlpatterns = [
-    path("facts", views.catfact_list),
-    path("facts/<int:pk>", views.catfact_detail),
-    path("random", views.catfact_random),
+    path("facts/", views.catfact_list),
+    path("facts/<int:pk>/", views.catfact_detail),
+    path("random/", views.catfact_random),
     
 ]
 
