@@ -1,15 +1,13 @@
-import random
-from django.http import HttpResponse, JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from rest_framework import viewsets
-from rest_framework.decorators import api_view, authentication_classes, permission_classes
-from django.shortcuts import render, redirect, get_object_or_404
-from rest_framework.decorators import action
+from django.shortcuts import render, redirect
+from rest_framework import generics
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny
-from rest_framework.parsers import JSONParser
+from rest_framework.views import APIView
 from .models import CatFact
 from .serializers import CatFactSerializer
+from rest_framework_simplejwt.authentication import JWTAuthentication
+
+
 
 # class CatFactViewSet(viewsets.ModelViewSet):
 # 	queryset = CatFact.objects.all()
@@ -28,19 +26,34 @@ from .serializers import CatFactSerializer
 # 		return Response(serializer.data)
 
 def frontend_view(request):
-	return render(request, 'index.html')
+	authentication_classes = [JWTAuthentication]
+	permission_classes = [IsAuthenticated]
+	return render(request,  'index.html')
 
 def submit_view(request):
 	return render(request, 'submit.html')
 
+def catfact_list_http_response(request):
+	context = {}
+	if len(CatFact.objects.all()) == 0:
+		context['nofacts'] = True
 
+	context['facts'] = CatFact.objects.all()
 
+	return render(request, "fact_list.html", context)
 
-@api_view(['GET','POST'])
-@authentication_classes([]) # Removes SessionAuthentication and its CSRF check
-@permission_classes([AllowAny])
-@csrf_exempt
-def catfact_list(request):
+def delete_catfact_http_response(request, id):
+	obj = get_object_or_404(CatFact, pk=id)
+	obj.delete()
+	return redirect("fact_list")
+'''
+	@api_view(['GET','POST'])
+
+	# @authentication_classes([]) # Removes SessionAuthentication and its CSRF check
+	# @permission_classes([AllowAny])
+	# @csrf_exempt
+
+def catfact_list(self, request):
 	if request.method == "GET":
 		cat_facts = CatFact.objects.all()
 		serializer = CatFactSerializer(cat_facts, many = True)
@@ -54,8 +67,10 @@ def catfact_list(request):
 		return JsonResponse(serializer.errors, status=400)
 
 @api_view(['GET','PUT','DELETE'])
-@csrf_exempt
-def catfact_detail(request,pk):
+
+# @csrf_exempt
+
+def catfact_detail(self, request,pk):
 	try:
 		fact = CatFact.objects.get(pk=pk)
 	except CatFact.DoesNotExist:
@@ -74,9 +89,12 @@ def catfact_detail(request,pk):
 	elif request.method == "DELETE":
 		fact.delete()
 		return HttpResponse(status=204)
+
 @api_view(['GET'])
-@csrf_exempt
-def catfact_random(request):
+# @authentication_classes([SessionAuthentication, BasicAuthentication])
+# @permission_classes([IsAuthenticated])
+# @csrf_exempt
+def catfact_random(self, request):
 	cat_facts = CatFact.objects.all()
 	if request.method == "GET":
 		count = cat_facts.count()
@@ -87,20 +105,32 @@ def catfact_random(request):
 		fact = cat_facts[random_index]
 		serializer = CatFactSerializer(fact)
 		return JsonResponse(serializer.data)
-	return JsonReposne(serializer.errors, status=400)
+	return JsonReposne(serializer.errors, status=400) 
+'''
+# Handles GET (List all facts) and POST (Create a new fact)
+class CatFactListCreateView(generics.ListCreateAPIView):
+	queryset = CatFact.objects.all()
+	serializer_class = CatFactSerializer
+	authentication_classes = [JWTAuthentication]
+	permission_classes = [IsAuthenticated]
 
-def catfact_list_http_response(request):
-	context = {}
-	if len(CatFact.objects.all()) == 0:
-		context['nofacts'] = True
+# Handles GET (Read one), PUT/PATCH (Update), and DELETE (Destroy)
+class CatFactDetailView(generics.RetrieveUpdateDestroyAPIView):
+	queryset = CatFact.objects.all()
+	serializer_class = CatFactSerializer
+	authentication_classes = [JWTAuthentication]
+	permission_classes = [IsAuthenticated]
 
-	context['facts'] = CatFact.objects.all()
-
-	return render(request, "fact_list.html", context)
-
-def delete_catfact_http_response(request, id):
-	obj = get_object_or_404(CatFact, pk=id)
-	obj.delete()
-	return redirect("fact_list")
-
+class RandomCatFactView(APIView):
+	authentication_classes = [JWTAuthentication]
+	permission_classes = [IsAuthenticated]
+	def get(self, request):
+		# order_by('?') randomly sorts the queryset, and .first() grabs the top one
+		random_fact	 = CatFact.objects.order_by('?').first()
+		
+		if not random_fact:
+			return Response({"detail": "No facts available."}, status=status.HTTP_404_NOT_FOUND)
+			
+		serializer = CatFactSerializer(random_fact)
+		return Response(serializer.data) 
 
