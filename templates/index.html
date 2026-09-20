@@ -37,7 +37,7 @@
 			<button id="logout-btn" class="btn btn-primary d-flex btn-lg rounded-pill my-3 px-5 shadow-sm">Logout</button></a>
 		</div>
 		<div class="container d-flex justify-content-center px-3">
-			<div class="card fact-card border-0 text-center p-5 bg-white">
+			<div id="main-card"class="card fact-card border-0 text-center p-5 bg-white">
 				<h1 class="display-5 mb-4 fw-bold text-primary">🐾 Cat Facts</h1>
 				
 				<div style="min-height: 100px; display: flex; align-items: center; justify-content: center;">
@@ -63,8 +63,51 @@
 	<script>
 		const fetchBtn = document.getElementById('fetch-btn');
 		const factText = document.getElementById('fact-text');
+		const loginBtn = document.getElementById('login-btn');
+		const logoutBtn = document.getElementById('logout-btn');
+		const mainCard = document.getElementById('main-card');
+		const userGreeting = document.getElementById('user-greeting');
 		let data;
+		function hide(element){
+			element.classList.add("d-none");
+		}
+		function show(element){
+			element.classList.remove("d-none")
+		}
+		const token = localStorage.getItem('access_token');
+		if(!token){
+			factText.textContent = "Not logged in";
+			console.log("No token found");
+			hide(logoutBtn); show(loginBtn);
+			hide(mainCard)
 
+		} 
+		else{
+			hide(loginBtn); show(logoutBtn);
+			show(mainCard);
+
+			const userProfile = loadUserProfile();
+			console.log(userProfile);
+			console.log(userProfile.username);
+
+			loadUserProfile().then(userProfile => {
+				userGreeting.textContent=userProfile.username;
+			});
+
+			fetchBtn.addEventListener('click',() =>{
+				getCatFact().then(fact => {
+					factText.textContent = fact;
+				})
+			});
+
+			window.addEventListener('DOMContentLoaded', () =>{
+				getCatFact().then(fact => {
+					factText.textContent = fact;
+				})
+			});
+		}
+
+		
 		async function loadUserProfile() {
 			try {
 				const token = localStorage.getItem('access_token');
@@ -77,54 +120,36 @@
 				});
 				if(response.ok){
 					const data = await response.json();
-					document.getElementById('user-greeting').textContent = data.username;
-					getCatFact();
+					return data;
 				}
 			}
 			catch(error){
-				factText.textContent = "not logged in";
-				fetchBtn.disabled = true;
+				console.log("loadUserProfile() try/catch failed")
 				return 0;
 			}
 		}
 
 		async function getCatFact() {
-			// Show loading state
-			factText.innerHTML = '<span class="spinner-border spinner-border-sm text-primary" role="status"></span> Loading...';
-			fetchBtn.disabled = true;
-
 			try {
-				// 1. Try fetching from the local Django API
 				const response = await fetch('/api/random/', {
 				method: 'GET',
 				headers: {
-					'Authorization': `Bearer ${localStorage.getItem('access_token')}` 
+					'Authorization': `Bearer ${token}` 
 				}
 
 			});
 				const data = await response.json();
 				if (response.ok && data.fact) {
 					factText.textContent = data.fact;
+					return data.fact;
 				} else {
 					throw new Error('Local database might be empty');
 				}
 			} catch (error) {
-				console.log("There are no facts", error);
-				factText.textContent = "Uh-oh, looks like there are no facts here...";
-				
-			} finally {
-				// Re-enable the button
-				fetchBtn.disabled = false;
+				console.log("Facts could not be fetched", error);
+				return -1;
 			}
 		}
-	
-			// Attach click event to the button
-			fetchBtn.addEventListener('click', getCatFact);
-			window.addEventListener('DOMContentLoaded', getCatFact);
-		
-		
-		factText.textContent = "not logged in";
-		fetchBtn.disabled = true;
 		
 		document.getElementById('logout-btn').addEventListener('click', () => {
             localStorage.removeItem('access_token');

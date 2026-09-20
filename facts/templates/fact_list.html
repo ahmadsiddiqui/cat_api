@@ -4,13 +4,14 @@
 <head>
 	<meta charset="UTF-8">
 	<script type="text/javascript">
-	function deleteRow(id) {
-		fetchString = "facts/delete/" + id;
-		console.log(fetchString);
-		fetch(fetchString);
-		const tr = document.getElementById(id);
-		tr.remove();
-	}
+        const token = localStorage.getItem('access_token');
+        console.log(token);
+        if(!token){
+            console.log("no token");
+            message.textContent = "You are not logged in";
+            myModal.show()
+            setTimeout(() => {window.location.href = "/login/";}, 1000);
+        }
 	
 </script>
 
@@ -51,7 +52,9 @@
             {% endif %}
             <table class="table table-hover">
             	{% for fact in facts %}
-					<tr id="{{ fact.id }}"><td>{{ fact }}</td><td  class="deleteBtn" onclick="deleteRow({{fact.id}})"> ❌ <td></tr>
+					<tr id="{{ fact.id }}">
+                        <td>{{ fact }}</td>
+                        <!-- <td  class="deleteBtn" onclick="deleteRow({{fact.id}})"> ❌ <td></tr> -->
 				{% endfor %}
 
 			</table>

@@ -1,93 +1,111 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catfacts!</title>
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            background-color: #e9ecef;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .fact-card {
-            max-width: 600px;
-            width: 100%;
-            border-radius: 1rem;
-            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-        }
-    </style>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Catfacts!</title>
+	<!-- Bootstrap 5 CSS -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+	<style>
+		body {
+			background-color: #e9ecef;
+			min-height: 100vh;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+		.fact-card {
+			max-width: 600px;
+			width: 100%;
+			border-radius: 1rem;
+			box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+		}
+	</style>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
 
-    <div class="container d-flex justify-content-center px-3">
-        <div class="card fact-card border-0 text-center p-5 bg-white">
-            <h1 class="display-5 mb-4 fw-bold text-primary">🐾 Submit a fact</h1>
-            <form action="/api/facts" method="POST" id="form">
-                <div style="min-height: 100px; display: flex; align-items: center;  justify-content: center;">
-                    <textarea class="form-control" id="fact-text" name="fact"></textarea>
-                </div>
-                
-                <div class="mt-5">
-                    <button id="fetch-btn" type="submit" class="btn btn-primary btn-lg rounded-pill px-5  shadow-sm">
-                        Submit Cat Fact
-                    </button>
-                </div>
-        </form>
-        </div>
-    </div>
+	<div class="container d-flex justify-content-center px-3">
+		<div class="card fact-card border-0 text-center p-5 bg-white">
+			<h1 class="display-5 mb-4 fw-bold text-primary">🐾 Submit a fact</h1>
+			
+				<div style="min-height: 100px; display: flex; align-items: center;  justify-content: center;">
+					<textarea class="form-control" id="fact-text" name="fact"></textarea>
+				</div>
+				
+				<div class="mt-5">
+					<button id="submit-btn" type="submit" class="btn btn-primary btn-lg rounded-pill px-5  shadow-sm">
+						Submit Cat Fact
+					</button>
+				</div>
+		
+		</div>
+	</div>
 
 
 
 <!-- Modal -->
 <div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">You did it!</h5>
-      </div>
-      <div class="modal-body">
-        You submitted a cat fact! Now go back to the homepage and refresh endlessly until it shows up...
-        <div class="modal-footer">
-            <a href="/" class="btn btn-primary">Go Home</a>
-            <button class="btn btn-secondary" data-bs-dismiss="modal">I have more facts!</button>
-        </div>
-        
-      </div>
-    </div>
+	<div class="modal-content">
+	  <div class="modal-body" id="message">   
+	  </div>
+	</div>
   </div>
 </div>
 
-    <script>
-  const form = document.getElementById('form');
-  const modalElement = document.getElementById('successModal');
-  const myModal = new bootstrap.Modal(modalElement);
-  form.addEventListener('submit', function(event) {
-    event.preventDefault(); // Stop normal submission/reload
-    
-    const formData = new FormData(form);
-    console.log(formData);
-    if(document.getElementById("fact-text").value == ""){
-        console.log("No form data provided");
-        return 0;
-    }
-    
-    // Send silently in the background
-    fetch('/api/facts', {
-      method: 'POST',
-      body: formData
-    }).then(response => {
-      console.log("Success");
-      myModal.show();
-    }).catch(error => {
-      console.log("Fail");
-    });
-  });
+<script>
+ 
+	const form = document.getElementById('form');
+	const modalElement = document.getElementById('successModal');
+	const myModal = new bootstrap.Modal(modalElement);
+	const submitBtn = document.getElementById('submit-btn');
+	const factText = document.getElementById("fact-text");
+	submitBtn.addEventListener('click', async function(event) {
+		event.preventDefault();
+		//const formData = new FormData(form);
+		//console.log(formData);
+		if(factText.value == ""){
+			console.log("No form data provided");
+			message.textContent = "Please enter a fact";
+			myModal.show();
+			return 0;
+		}
+		const token = localStorage.getItem('access_token');
+		console.log(token);
+		if(!token){
+			console.log("no token");
+			message.textContent = "You are not logged in";
+			myModal.show()
+			setTimeout(() => {window.location.href = "/login/";}, 1000);
+		}
+		try{
+			const response = await fetch('/api/facts/',{
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization' : `Bearer ${token}`
+				},
+				body: JSON.stringify({fact:factText.value})
+			});
+
+			console.log(response);
+			if(response.ok){
+				const data = await response.json();
+				message.textContent = "Successfully created";
+				myModal.show();
+			}
+			else{
+				const errorData = await response.json();
+				message.textContent = "Network error";
+				myModal.show();
+			}
+		}catch(error){
+			console.error("Error posting fact:", error);
+			message.textContent = "A network error occured";
+		}
+	});
+
 </script>
 
 </body>
