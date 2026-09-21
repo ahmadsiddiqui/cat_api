@@ -53,6 +53,7 @@
 					</br>
 					<a class="btn btn-light btn-md  my-3 mx-2 px-5 shadow-sm" href="/submit" role="button">Submit a cat fact</a>
 					<a class="btn btn-light btn-md  my-3 mx-2 px-5 shadow-sm" href="/fact_list" role="button">See all facts</a>
+					<a class="btn btn-light btn-md  my-3 mx-2 px-5 shadow-sm" href="/dashboard" role="button">My facts</a>
 				</div>
 			</div>
 		</div>
@@ -92,7 +93,9 @@
 
 			loadUserProfile().then(userProfile => {
 				userGreeting.textContent=userProfile.username;
+				console.log(userProfile.username);
 			});
+			
 
 			fetchBtn.addEventListener('click',() =>{
 				getCatFact().then(fact => {

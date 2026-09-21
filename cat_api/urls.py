@@ -20,7 +20,10 @@ from facts.views import (
 	frontend_view, 
 	submit_view, 
 	catfact_list_http_response, 
-	delete_catfact_http_response
+	delete_catfact_http_response,
+	catfact_List_filtered_json,
+	dashboard_view,
+
 	)
 from rest_framework_simplejwt.views import (
 	TokenObtainPairView,
@@ -39,5 +42,7 @@ urlpatterns = [
 	#path("facts/delete/<int:id>", delete_catfact_http_response),
 	path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
 	path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+	path('dashboard/', dashboard_view, name='dashboard'),
+	path('filtered-facts/', catfact_List_filtered_json, name='filtered-facts'),
 	
 ]

@@ -18,8 +18,6 @@ def login_view(request):
 def register_view(request):
 	return render(request, 'accounts/register.html')
 
-def dashboard_view(request):
-	return redirect( '/')
 
 class UserProfileView(APIView):
 	authentication_classes = [JWTAuthentication]
@@ -27,5 +25,6 @@ class UserProfileView(APIView):
 
 	def get(self, request):
 		return Response({
-			"username": request.user.username
+			"username": request.user.username,
+			"id": request.user.id
 		})

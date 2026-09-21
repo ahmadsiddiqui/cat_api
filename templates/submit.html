@@ -48,8 +48,13 @@
 <div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
 	<div class="modal-content">
-	  <div class="modal-body" id="message">   
+	  <div class="modal-body" id="message">
+        
 	  </div>
+      <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Add More</button>
+        <a href="/"><button type="button" class="btn btn-secondary">Home</button></a>
+      </div>
 	</div>
   </div>
 </div>
@@ -61,6 +66,37 @@
 	const myModal = new bootstrap.Modal(modalElement);
 	const submitBtn = document.getElementById('submit-btn');
 	const factText = document.getElementById("fact-text");
+	async function loadUserProfile() {
+		try {
+			const token = localStorage.getItem('access_token');
+				if(!token){
+                    console.log("No access token");
+                    return;
+                } 
+
+				const response = await fetch('/api/profile/', {
+					method: 'GET',
+					headers: {
+						'Authorization': `Bearer ${token}` 
+					}
+				});
+				if(response.ok){
+					const data = await response.json();
+                    console.log(data);
+					return data;
+
+				}
+			}
+			catch(error){
+				console.log("loadUserProfile() try/catch failed")
+				return 0;
+            }
+  }
+  async function fetchAuthorId() {
+    const userProfile = await loadUserProfile();
+    return userProfile.id
+  }
+
 	submitBtn.addEventListener('click', async function(event) {
 		event.preventDefault();
 		//const formData = new FormData(form);
@@ -80,16 +116,18 @@
 			setTimeout(() => {window.location.href = "/login/";}, 1000);
 		}
 		try{
+            
+            
 			const response = await fetch('/api/facts/',{
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
 					'Authorization' : `Bearer ${token}`
 				},
-				body: JSON.stringify({fact:factText.value})
+				body: JSON.stringify({fact:factText.value, author:await fetchAuthorId()})
 			});
 
-			console.log(response);
+			
 			if(response.ok){
 				const data = await response.json();
 				message.textContent = "Successfully created";

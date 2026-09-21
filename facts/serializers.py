@@ -4,5 +4,5 @@ from .models import CatFact
 class CatFactSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = CatFact 
-		fields = ['id', 'fact', 'created_at']
+		fields = ['id', 'fact', 'created_at', 'author']
 		
