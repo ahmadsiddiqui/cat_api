@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,10 +11,7 @@
             myModal.show()
             setTimeout(() => {window.location.href = "/login/";}, 1000);
         }
-	
 </script>
-
-    
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Catfacts!</title>
     <!-- Bootstrap 5 CSS -->
@@ -42,7 +38,7 @@
 </head>
 <body>
 
-    <div class="container d-flex justify-content-center px-3">
+    <div class="container d-flex justify-content-center px-3 ">
         <div class="card fact-card border-0 text-center p-5 bg-white">
             <h1 class="display-5 mb-4 fw-bold text-primary">🐾Fact List</h1>
             {% if nofacts %}
@@ -58,11 +54,14 @@
 				{% endfor %}
 
 			</table>
-
-            
+            <div class="mt-5">
+                <a href="/">
+                    <button class="btn btn-primary btn-lg rounded-pill px-5  shadow-sm">
+                        Home
+                    </button>
+                </a>
+            </div>
         </div>
     </div>
-
-
 </body>
 </html>

@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -20,6 +21,29 @@
 			border-radius: 1rem;
 			box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
 		}
+		.sprite-character {
+  		/* Dimensions must exactly match a single frame */
+ 		 width: 84px;
+  		height: 100px;
+  
+  		/* Path to your horizontal sprite sheet */
+  		background-image: url("{% static 'sprite.png' %}");
+  		background-repeat: no-repeat;
+  
+  		/* Apply the keyframe animation */
+  		/* Duration, number of frames in steps(), and loop behavior */
+  		animation: play-sprite 0.5s steps(6) infinite ;
+		}
+
+		@keyframes play-sprite {
+		  0% {
+		    background-position: 0px 0px;
+		  }
+		  100% {
+		    /* Move left by the exact total width of the sprite sheet */
+		    background-position: -525px 0px;
+		  }
+		}
 	</style>
 </head>
 <body>
@@ -37,14 +61,19 @@
 			<button id="logout-btn" class="btn btn-primary d-flex btn-lg rounded-pill my-3 px-5 shadow-sm">Logout</button></a>
 		</div>
 		<div class="container d-flex justify-content-center px-3">
+
 			<div id="main-card"class="card fact-card border-0 text-center p-5 bg-white">
-				<h1 class="display-5 mb-4 fw-bold text-primary">🐾 Cat Facts</h1>
+				<div class="display-1 mx-auto text-center sprite-character"></div>
+				<h1 class="display-5 mb-4 justify-content-center fw-bold text-primary">Cat Facts</h1>
 				
 				<div style="min-height: 100px; display: flex; align-items: center; justify-content: center;">
+
 					<p id="fact-text" class="fs-4 lead text-secondary mb-0">
 						Click the button to fetch a purr-fect fact!
 					</p>
+					
 				</div>
+
 				
 				<div class="mt-5">
 					<button id="fetch-btn" class="btn btn-primary btn-lg rounded-pill my-3 px-5 shadow-sm">
