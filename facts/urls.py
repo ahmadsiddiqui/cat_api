@@ -21,5 +21,6 @@ urlpatterns = [
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
+handler404 = 'facts.views.custom_404_redirect'
 
 #urlpatterns.append(path('', include(router.urls)))

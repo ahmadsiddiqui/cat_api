@@ -9,7 +9,9 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 
 
-
+def custom_404_redirect(request, exception=None):
+    # Redirect smoothly to the home page or a named URL pattern
+    return redirect('/') 
 
 def frontend_view(request):
 	authentication_classes = [JWTAuthentication]
