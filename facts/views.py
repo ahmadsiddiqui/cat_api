@@ -77,7 +77,7 @@ class RandomCatFactView(APIView):
 		random_fact	 = CatFact.objects.order_by('?').first()
 		
 		if not random_fact:
-			return Response({"detail": "No facts available."}, status=status.HTTP_404_NOT_FOUND)
+			return Response({"detail": "No facts available."})
 			
 		serializer = CatFactSerializer(random_fact)
 		return Response(serializer.data) 
