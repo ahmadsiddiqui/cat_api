@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.views import APIView
 from .models import CatFact
 from .serializers import CatFactSerializer
@@ -60,6 +61,13 @@ class CatFactDetailView(generics.RetrieveUpdateDestroyAPIView):
 	serializer_class = CatFactSerializer
 	authentication_classes = [JWTAuthentication]
 	permission_classes = [IsAuthenticated]
+
+	def destroy(self, request, *args, **kwargs):
+		instance = self.get_object();
+
+		if instance.author != request.user:
+			raise PermissionDenied("Unauthorized action!") 
+		return super().destroy(request, *args, **kwargs)
 
 class RandomCatFactView(APIView):
 	authentication_classes = [JWTAuthentication]

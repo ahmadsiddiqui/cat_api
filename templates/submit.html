@@ -60,7 +60,7 @@
         
 	  </div>
       <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Add More</button>
+          <button type="button" id="add-more" class="btn btn-secondary" data-bs-dismiss="modal">Add More</button>
         <a href="/"><button type="button" class="btn btn-secondary">Home</button></a>
       </div>
 	</div>
@@ -74,6 +74,7 @@
 	const myModal = new bootstrap.Modal(modalElement);
 	const submitBtn = document.getElementById('submit-btn');
 	const factText = document.getElementById("fact-text");
+	const addMore = document.getElementById("add-more");
 	async function loadUserProfile() {
 		try {
 			const token = localStorage.getItem('access_token');
@@ -104,6 +105,11 @@
     const userProfile = await loadUserProfile();
     return userProfile.id
   }
+
+  addMore.addEventListener('click', function() {
+  	factText.value = "";
+  	factText.focus();
+  });
 
 	submitBtn.addEventListener('click', async function(event) {
 		event.preventDefault();
@@ -140,6 +146,7 @@
 				const data = await response.json();
 				message.textContent = "Successfully created";
 				myModal.show();
+				factText.value="";
 			}
 			else{
 				const errorData = await response.json();

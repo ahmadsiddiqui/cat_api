@@ -10,7 +10,12 @@
             console.log("no token");
             setTimeout(() => {window.location.href = "/login/";}, 1000);
         }
-            async function loadUserProfile() {
+        async function loadUserProfile() {
+            if(!token){
+                console.log("no token");
+                setTimeout(() => {window.location.href = "/login/";}, 1000);
+            }
+
             try {
                 const token = localStorage.getItem('access_token');
                     if(!token){
@@ -36,14 +41,14 @@
                     return 0;
                 }
             }
-            async function fetchUserId() {
-                const userProfile = await loadUserProfile();
-                return userProfile.id
-            }
-            async function fetchUserName() {
-                const userProfile = await loadUserProfile();
-                return userProfile.username
-            }
+        async function fetchUserId() {
+            const userProfile = await loadUserProfile();
+            return userProfile.id
+        }
+        async function fetchUserName() {
+            const userProfile = await loadUserProfile();
+            return userProfile.username
+        }
 
 
         async function fetchFacts(){
@@ -51,6 +56,7 @@
             const factTable = document.getElementById('fact-table');
             const msgContainer= document.getElementById("message");
             msgContainer.innerHTML = "Loading..."
+            factTable.innerHTML = "";
             try{
                 const response = await fetch('/filtered-facts/',{
                     method: 'GET',
@@ -74,18 +80,57 @@
                     return
                 }
                 facts.forEach(fact =>{
+                    const factId = fact.id;
                     const factElementTr = document.createElement('tr');
-                    factElementTr.id = fact.id;
-                    const factElementTd = document.createElement('td');
-                    factElementTd.innerHTML= fact.fact;
-                    factElementTr.append(factElementTd);
+                    factElementTr.id = factId;
+                    const factTextTd = document.createElement('td');
+                    const factDeleteTd = document.createElement('td');
+                    
+                    factTextTd.innerHTML= fact.fact;
+
+                    factDeleteTd.innerHTML = "&#10060"
+
+                    factDeleteTd.style.cursor= "pointer";
+                    console.log(factId);
+                    factDeleteTd.addEventListener('click', (event) => {
+                        deleteFact(factId);
+                    });
+                    factElementTr.append(factTextTd);
+                    factElementTr.append(factDeleteTd)
                     factTable.append(factElementTr);
+
 
                 });
             } catch (error) {
                 console.error("Fetch error:", error);
                 message.innerHTML = `<p style='color: red;'>${error.message}</p>`;
             }
+        }
+
+        async function deleteFact(factId){
+            // console.log(factId);
+            const tr = document.getElementById(factId);
+
+            if(!token){
+                console.log("no token");
+                setTimeout(() => {window.location.href = "/login/";}, 1000);
+            }
+            try{
+                const response = await fetch(`/api/facts/${factId}/`, {
+                    method : 'DELETE',
+                    headers: {
+                        'Authorization':`Bearer ${token}`,
+                        'Content-Type':'application/json'
+                    }
+                });
+                if(response.ok){
+                    console.log("factDeleted");
+                    tr.remove();
+                    await fetchFacts();
+                }
+
+            }
+            catch(error) {console.error('Failed:', error);}
         }
 	
     </script>
@@ -126,7 +171,8 @@
                     No facts submitted by 
                 </p>
             
-            <table id="fact-table" class="table table-hover">
+            <table class="table table-hover">
+                <tbody id="fact-table"></tbody>
 			</table>
 
             <a href="/"><button class="btn btn-primary btn-lg rounded-pill px-5  shadow-sm">Home</button></a>
