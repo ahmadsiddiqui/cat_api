@@ -1,5 +1,5 @@
 chars='abcdef0123456789'
-length=32
+length=100
 result=""
 for ((i=0; i<length; i++)); do
     result+="${chars:RANDOM%${#chars}:1}"

@@ -148,7 +148,7 @@
             align-items: center;
             justify-content: center;
         }
-        .fact-card {
+        .fact-card, .key-card {
             max-width: 600px;
             width: 100%;
             border-radius: 1rem;
@@ -162,23 +162,80 @@
 </head>
 <body onload="fetchFacts()">
 
+    <div class="container d-flex flex-column justify-content-center mt-4 px-3">
+        <div class="container d-flex justify-content-center px-3">
+            <div class="card fact-card border-0 text-center p-5 bg-white">
+                <h1 class="display-5 mb-4 fw-bold text-primary">🐾Fact List</h1>
+               
+                <p id="message" class="fs-4 lead text-secondary mb-0">
+                        No facts submitted by 
+                    </p>
+                
+                <table class="table table-hover">
+                    <tbody id="fact-table"></tbody>
+    			</table>
 
-    <div class="container d-flex justify-content-center px-3">
-        <div class="card fact-card border-0 text-center p-5 bg-white">
-            <h1 class="display-5 mb-4 fw-bold text-primary">🐾Fact List</h1>
-           
-            <p id="message" class="fs-4 lead text-secondary mb-0">
-                    No facts submitted by 
-                </p>
-            
-            <table class="table table-hover">
-                <tbody id="fact-table"></tbody>
-			</table>
+                <a href="/"><button class="btn btn-primary btn-lg rounded-pill px-5  shadow-sm">Home</button></a>
+            </div>
+        </div>
+        
+        <div class="container d-flex justify-content-center px-3 mt-5">
+            <div class="card key-card border-0 text-center p-5 bg-white">
+                <h1 class="display-5 mb-4 fw-bold text-primary">API Key</h1>
+               <button id="generateBtn" class="btn btn-primary btn-lg rounded-pill px-5  shadow-sm">Generate</button>
+               <br>
+                <p id="tokenValue" class="fs-4 lead text-secondary mb-0">sdsd</p>
+                <button id="copyBtn" class="btn btn-primary btn-lg rounded-pill px-5  shadow-sm">Copy</button>
 
-            <a href="/"><button class="btn btn-primary btn-lg rounded-pill px-5  shadow-sm">Home</button></a>
+            </div>
         </div>
     </div>
-
-
 </body>
+<script>
+    document.getElementById('generateBtn').addEventListener('click', async function() {
+
+        const token = localStorage.getItem('access_token');
+
+        try {
+            // Make POST request to Django backend
+            const response = await fetch("{% url 'generate_api_key' %}", {
+                method: "POST",
+                headers: {
+                    
+                    "Content-Type": "application/json",
+                    'Authorization': `Bearer ${token}` 
+
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                
+                // Display the token string to the user
+                document.getElementById('tokenValue').innerText = data.api_token;
+            } else {
+                alert('Failed to generate token. Please ensure you are logged in.');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An unexpected error occurred.');
+        }
+    });
+
+    // Copy to Clipboard Functionality
+    document.getElementById('copyBtn').addEventListener('click', function() {
+        const tokenText = document.getElementById('tokenValue').innerText;
+        navigator.clipboard.writeText(tokenText).then(() => {
+            const originalText = this.innerText;
+            this.innerText = 'Copied!';
+            this.style.background = '#1e7e34';
+            setTimeout(() => {
+                this.innerText = originalText;
+                this.style.background = '#28a745';
+            }, 2000);
+        });
+    });
+</script>
+
+
 </html>
